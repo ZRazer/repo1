@@ -36,12 +36,12 @@ N=3000000;
 VLPpoints = zeros(N,3);
 index = 1;
 
-M = 50000;
+M = 100000;
 X = zeros(M,1);
 Y = zeros(M,1);
 Z = zeros(M,1);
 
-I = zeros(M,2);
+I = zeros(M,6); % Index, #data, currentT(ms), currentT2(ms)
 index2 = 1;
 
 K = 1000;
@@ -53,6 +53,24 @@ startI = 1;
 endI = 1;
 
 plotFlag = 1;
+
+%--------------------------
+
+returnCode = 0;
+
+SENSOR_DATA = zeros(K,12); %ACC X, Y Z | GYRO X, Y, Z | GPS X, Y, Z
+
+%[returnCode, gps]=vrep.simxGetStringSignal(clientID,'gpsSig', vrep.simx_opmode_streaming);
+[returnCode, gps]=vrep.simxReadStringStream(clientID,'gpsSig', vrep.simx_opmode_streaming);
+disp(['gpsSig:',num2str(returnCode)]);
+
+[returnCode, gyro]=vrep.simxReadStringStream(clientID,'gyroSig', vrep.simx_opmode_streaming);
+disp(['gyroSig:',num2str(returnCode)]);
+
+[returnCode, acc]=vrep.simxReadStringStream(clientID,'accSig', vrep.simx_opmode_streaming);
+disp(['accSig:',num2str(returnCode)]);
+
+%--------------------------
 
 if  clientID>-1
     figure;
@@ -68,16 +86,49 @@ if  clientID>-1
         
         if connectionId>-1
             
+            %[returnCode, gps]=vrep.simxGetStringSignal(clientID,'gpsSig', vrep.simx_opmode_buffer);
+            [returnCode, gps]=vrep.simxReadStringStream(clientID,'gpsSig', vrep.simx_opmode_buffer);
+            if returnCode == 0
+                [gps_arr]=vrep.simxUnpackFloats(gps);
+                
+                SENSOR_DATA(VLPsetsIndex,7:10) = gps_arr;
+            else 
+                disp(['gpsSig:',num2str(returnCode)]);
+            end
+
+            [returnCode, gyro]=vrep.simxReadStringStream(clientID,'gyroSig', vrep.simx_opmode_buffer);
+            if returnCode == 0
+                [gyro_arr]=vrep.simxUnpackFloats(gyro);
+                
+                SENSOR_DATA(VLPsetsIndex,4:6) = gyro_arr;
+            else
+                disp(['gyroSig:',num2str(returnCode)]);
+            end
+
+            [returnCode, acc]=vrep.simxReadStringStream(clientID,'accSig', vrep.simx_opmode_buffer);
+            if returnCode == 0
+                [acc_arr]=vrep.simxUnpackFloats(acc);
+                
+                SENSOR_DATA(VLPsetsIndex,1:3) = acc_arr;
+            else
+                disp(['accSig:',num2str(returnCode)]);
+            end
+            
+            
+            
             [res, retInt, retFloats, retStrings, retBuffer]=vrep.simxCallScriptFunction(clientID, 'velodyneVPL_16', vrep.sim_scripttype_childscript, 'getVelodyneData_function',[],[],[],[],vrep.simx_opmode_blocking);
             
             if res == 0
             
+                %SENSOR_DATA(VLPsetsIndex,11:12) = vrep.simxUnpackFloats(retStrings);
+                
                 A=retInt;
-                I(index2,:) = A;
+                I(index2,1:4) = A;
                 index2 = index2 + 1;
 
                 B=retFloats;
-                D=length(B)/3-1;
+                D=length(B)/3-1;            
+                
 
                 %[res2 retInts2 retFloats2 retStrings2 retBuffer2]=vrep.simxCallScriptFunction(clientID, 'velodyneVPL_16#0', vrep.sim_scripttype_childscript, 'getVelodyneData_function2',[],[],[],[],vrep.simx_opmode_blocking);
                 %B2=retFloats2;
@@ -99,7 +150,7 @@ if  clientID>-1
     %                 Z(i+1)=-B(1,a);
                 end
 
-                quarterCounter = quarterCounter + 1;
+                quarterCounter = 4;%quarterCounter + 1;
                 VLPsetNumberOfPoints = VLPsetNumberOfPoints + D + 1;
 
                 VLPpoints(index:index+D,:)=[X(1:D+1) Y(1:D+1) Z(1:D+1)];
@@ -158,6 +209,9 @@ if  clientID>-1
     %            plot3(X2,Y2,Z2,'.r');
 
                 %drawnow limitrate;
+                
+            else
+                disp(['VeloRes:',num2str(res)]);
             end
             
         else
@@ -221,21 +275,21 @@ title('Remaining Point Cloud');
 
 %global VLPsets;
 %global VLPpoints;
-plotCloudsByIndex(VLPpoints, VLPsets, 1,4);
+plotCloudsByIndex(VLPpoints, VLPsets, 1,15);
 
 
 %% Voxel Grid Filtering
 
-%ptCloudOut = pcdownsample(ptCloudIn,'gridAverage',gridStep) 
-%returns a downsampled point cloud using a box grid filter. The gridStep input specifies the size of a 3-D box.
-
-ptCloud = pointCloud(VLPpoints(startIndex:endIndex,:));
-
-gridStep = 0.1;
-ptCloudA = pcdownsample(ptCloud,'gridAverage',gridStep);
-
-figure;
-pcshow(ptCloudA);
+% %ptCloudOut = pcdownsample(ptCloudIn,'gridAverage',gridStep) 
+% %returns a downsampled point cloud using a box grid filter. The gridStep input specifies the size of a 3-D box.
+% 
+% ptCloud = pointCloud(VLPpoints(startIndex:endIndex,:));
+% 
+% gridStep = 0.1;
+% ptCloudA = pcdownsample(ptCloud,'gridAverage',gridStep);
+% 
+% figure;
+% pcshow(ptCloudA);
 
 %%
 ptCloudOrg = getCloudByIndex(VLPpoints, VLPsets, 11, 0);
@@ -251,36 +305,46 @@ title('Voxel Grid Filtered Point Cloud');
 
 
 
-%% ICP Deneme
+%% ICP Deneme - Preprocessing
+firstIndex = 2;
+lastIndex = 5;
 
-ptCloudOrg = getCloudByIndex(VLPpoints, VLPsets, 1, 1);
+%Voxel Grid Filtering of First PC
+ptCloudOrg = getCloudByIndex(VLPpoints, VLPsets, firstIndex, 1);
 [ remainPtCloud, ~, ~] = removeGroundPlaneofPointCloud(ptCloudOrg, 0 );
 gridStep = 0.05;
 ptCloudFixed = pcdownsample(remainPtCloud,'gridAverage',gridStep);
 
-ptCloudOrg2 = getCloudByIndex(VLPpoints, VLPsets, 53, 1);
+%Voxel Grid Filtering of Last PC
+ptCloudOrg2 = getCloudByIndex(VLPpoints, VLPsets, lastIndex, 1);
 [ remainPtCloud, ~, ~] = removeGroundPlaneofPointCloud(ptCloudOrg2, 0 );
 gridStep = 0.05;
 ptCloudMoving = pcdownsample(remainPtCloud,'gridAverage',gridStep);
 
-
+%% ICP 1
 
 tform = pcregrigid(ptCloudMoving,ptCloudFixed,'Extrapolate',true);
 tform2 = invert(tform);
 disp(tform2.T);
+GPS_Diff(SENSOR_DATA, lastIndex, firstIndex, 1);
 
-
+%% ICP 2
 tform = pcregrigid(ptCloudMoving,ptCloudFixed, 'Verbose', true);
 tform2 = invert(tform);
 disp(tform2.T);
+GPS_Diff(SENSOR_DATA, lastIndex, firstIndex, 1);
 
+%% ICP 3
 tform = pcregrigid(ptCloudMoving,ptCloudFixed, 'Metric', 'pointToPlane');
 tform2 = invert(tform);
 disp(tform2.T);
+GPS_Diff(SENSOR_DATA, lastIndex, firstIndex, 1);
 
-tform = pcregrigid(ptCloudMoving,ptCloudFixed, 'InlierRatio',0.7, 'Verbose', true);
+%% ICP 4 ***
+tform = pcregrigid(ptCloudMoving,ptCloudFixed, 'InlierRatio',0.6, 'Verbose', true);
 tform2 = invert(tform);
 disp(tform2.T);
+GPS_Diff(SENSOR_DATA, lastIndex, firstIndex, 1);
 
 
 %% Convert & Save to PCD Format of PCL
@@ -304,4 +368,37 @@ savepcd('ptXYZCloud4b.pcd', ptXYZCloud4, 'binary');
 savepcd('ptXYZCloud5b.pcd', ptXYZCloud5, 'binary');
 
 lspcd
+
+
+
+
+%% Draw Sensor Data
+
+range = 2:154;
+
+figure;
+plot(getACCByIndex(SENSOR_DATA,range));
+grid on;
+title('Accelorometer');
+legend('X', 'Y', 'Z');
+
+figure;
+plot(getGYROByIndex(SENSOR_DATA,range));
+grid on;
+title('GYRO');
+legend('X', 'Y', 'Z');
+
+
+figure;
+plot(getGPSByIndex(SENSOR_DATA,range));
+grid on;
+title('GPS');
+legend('X', 'Y', 'Z');
+
+%% GPS Diff
+
+GPS_Diff(SENSOR_DATA, 4, 2, 1);
+
+
+
 
