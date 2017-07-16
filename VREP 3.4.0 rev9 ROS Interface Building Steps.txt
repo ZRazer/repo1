@@ -1,0 +1,255 @@
+VREP 3.4.0 rev9 ROS Interface Building Steps
+
+0.1) SETUP CATKIN BUILD ENVIRONMENT
+ubuntuUser@MACHINE:~$ sudo apt install git cmake python-tempita python-catkin-tools python-lxml
+[sudo] password for ubuntuUser: 
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+python-lxml is already the newest version (3.5.0-1build1).
+python-lxml set to manually installed.
+cmake is already the newest version (3.5.1-1ubuntu3).
+git is already the newest version (1:2.7.4-0ubuntu1.1).
+The following packages were automatically installed and are no longer required:
+  libbonobo2-0 libbonobo2-common libgnome-2-0 libgnome2-common libgnomevfs2-0
+  libgnomevfs2-common libmircommon5 libopencv-photo2.4v5 liborbit-2-0
+  libwireshark6 libwiretap5 libwsutil6 linux-headers-4.4.0-72
+  linux-headers-4.4.0-72-generic linux-headers-4.4.0-75
+  linux-headers-4.4.0-75-generic linux-headers-4.4.0-77
+  linux-headers-4.4.0-77-generic linux-headers-4.4.0-78
+  linux-headers-4.4.0-78-generic linux-headers-4.4.0-79
+  linux-headers-4.4.0-79-generic linux-image-4.4.0-72-generic
+  linux-image-4.4.0-75-generic linux-image-4.4.0-77-generic
+  linux-image-4.4.0-78-generic linux-image-4.4.0-79-generic
+  linux-image-extra-4.4.0-72-generic linux-image-extra-4.4.0-75-generic
+  linux-image-extra-4.4.0-77-generic linux-image-extra-4.4.0-78-generic
+  linux-image-extra-4.4.0-79-generic python-opencv
+Use 'sudo apt autoremove' to remove them.
+The following additional packages will be installed:
+  python-osrf-pycommon
+The following NEW packages will be installed:
+  python-catkin-tools python-osrf-pycommon python-tempita
+0 upgraded, 3 newly installed, 0 to remove and 9 not upgraded.
+Need to get 349 kB of archives.
+After this operation, 1.135 kB of additional disk space will be used.
+Do you want to continue? [Y/n] Y
+Get:1 http://archive.ubuntu.com/ubuntu xenial/main amd64 python-tempita all 0.5.2-1build1 [13,8 kB]
+Get:2 http://packages.ros.org/ros/ubuntu xenial/main amd64 python-osrf-pycommon all 0.1.3-1 [22,8 kB]
+Get:3 http://packages.ros.org/ros/ubuntu xenial/main amd64 python-catkin-tools all 0.4.4-1 [312 kB]
+Fetched 349 kB in 1s (183 kB/s)              
+N: Ignoring file '20auto-upgrades.ucf-dist' in directory '/etc/apt/apt.conf.d/' as it has an invalid filename extension
+Selecting previously unselected package python-osrf-pycommon.
+(Reading database ... 572842 files and directories currently installed.)
+Preparing to unpack .../python-osrf-pycommon_0.1.3-1_all.deb ...
+Unpacking python-osrf-pycommon (0.1.3-1) ...
+Selecting previously unselected package python-catkin-tools.
+Preparing to unpack .../python-catkin-tools_0.4.4-1_all.deb ...
+Unpacking python-catkin-tools (0.4.4-1) ...
+Selecting previously unselected package python-tempita.
+Preparing to unpack .../python-tempita_0.5.2-1build1_all.deb ...
+Unpacking python-tempita (0.5.2-1build1) ...
+Setting up python-osrf-pycommon (0.1.3-1) ...
+Setting up python-catkin-tools (0.4.4-1) ...
+Setting up python-tempita (0.5.2-1build1) ...
+N: Ignoring file '20auto-upgrades.ucf-dist' in directory '/etc/apt/apt.conf.d/' as it has an invalid filename extension
+
+0.2) INSTALL SAXON
+ubuntuUser@MACHINE:~$ cd Downloads/
+ubuntuUser@MACHINE:~/Downloads$ wget http://downloads.sourceforge.net/project/saxon/Saxon-HE/9.7/SaxonHE9-7-0-8J.zip
+--2017-07-01 19:29:42--  http://downloads.sourceforge.net/project/saxon/Saxon-HE/9.7/SaxonHE9-7-0-8J.zip
+Resolving downloads.sourceforge.net (downloads.sourceforge.net)... 216.34.181.59
+Connecting to downloads.sourceforge.net (downloads.sourceforge.net)|216.34.181.59|:80... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://netix.dl.sourceforge.net/project/saxon/Saxon-HE/9.7/SaxonHE9-7-0-8J.zip [following]
+--2017-07-01 19:29:43--  https://netix.dl.sourceforge.net/project/saxon/Saxon-HE/9.7/SaxonHE9-7-0-8J.zip
+Resolving netix.dl.sourceforge.net (netix.dl.sourceforge.net)... 87.121.121.2
+Connecting to netix.dl.sourceforge.net (netix.dl.sourceforge.net)|87.121.121.2|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 4677937 (4,5M) [application/octet-stream]
+Saving to: ‘SaxonHE9-7-0-8J.zip’
+
+SaxonHE9-7-0-8J.zip 100%[===================>]   4,46M  3,33MB/s    in 1,3s    
+
+2017-07-01 19:29:45 (3,33 MB/s) - ‘SaxonHE9-7-0-8J.zip’ saved [4677937/4677937]
+
+ubuntuUser@MACHINE:~/Downloads$ cd -
+/home/ubuntuUser
+ubuntuUser@MACHINE:~$ mkdir -p saxon/bin
+ubuntuUser@MACHINE:~$ cd saxon/
+ubuntuUser@MACHINE:~/saxon$ unzip ~/Downloads/SaxonHE9-7-0-8J.zip
+Archive:  /home/ubuntuUser/Downloads/SaxonHE9-7-0-8J.zip
+   creating: doc/
+   creating: doc/img/
+   creating: notices/
+  inflating: doc/img/logo_crop-mid-blue-background.gif  
+  inflating: doc/img/saxonica_logo.gif  
+  inflating: doc/index.html          
+  inflating: doc/saxondocs.css       
+  inflating: notices/CERN.txt        
+  inflating: notices/JAMESCLARK.txt  
+  inflating: notices/LICENSE.txt     
+  inflating: notices/THAI.txt        
+  inflating: notices/UNICODE.txt     
+  inflating: saxon9-test.jar         
+  inflating: saxon9-xqj.jar          
+  inflating: saxon9he.jar            
+ubuntuUser@MACHINE:~/saxon$ echo -e '#!/bin/sh\njava -jar "`dirname "$0"`/../saxon9he.jar" "$@"' > bin/saxon
+ubuntuUser@MACHINE:~/saxon$ chmod a+x bin/saxon
+ubuntuUser@MACHINE:~/saxon$ echo 'export PATH="$PATH:$HOME/saxon/bin"' >> ~/.bashrc
+ubuntuUser@MACHINE:~/saxon$ source ~/.bashrc
+ubuntuUser@MACHINE:~/saxon$ pat
+patch      patchwork  patgen     pathchk    
+ubuntuUser@MACHINE:~/saxon$ pat
+patch      patchwork  patgen     pathchk    
+ubuntuUser@MACHINE:~/saxon$ $PATH 
+bash: /opt/ros/kinetic/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin:/home/your_user/.local/bin:/home/your_user/.local/bin:/home/your_user/.local/bin:/home/your_user/.local/bin:/home/ubuntuUser/saxon/bin: No such file or directory
+ubuntuUser@MACHINE:~/saxon$ ll
+total 4844
+drwxrwxr-x  5 ubuntuUser ubuntuUser    4096 Tem  1 19:30 ./
+drwxr-xr-x 61 ubuntuUser ubuntuUser    4096 Tem  1 19:30 ../
+drwxrwxr-x  2 ubuntuUser ubuntuUser    4096 Tem  1 19:30 bin/
+drwxr-xr-x  3 ubuntuUser ubuntuUser    4096 Eyl  1  2016 doc/
+drwxr-xr-x  2 ubuntuUser ubuntuUser    4096 Eyl  1  2016 notices/
+-rw-r--r--  1 ubuntuUser ubuntuUser 4737863 Eyl  1  2016 saxon9he.jar
+-rw-r--r--  1 ubuntuUser ubuntuUser  113299 Eyl  1  2016 saxon9-test.jar
+-rw-r--r--  1 ubuntuUser ubuntuUser   84085 Eyl  1  2016 saxon9-xqj.jar
+ubuntuUser@MACHINE:~/saxon$ pwd
+/home/ubuntuUser/saxon
+ubuntuUser@MACHINE:~/saxon$ cd bin
+ubuntuUser@MACHINE:~/saxon/bin$ ll
+total 12
+drwxrwxr-x 2 ubuntuUser ubuntuUser 4096 Tem  1 19:30 ./
+drwxrwxr-x 5 ubuntuUser ubuntuUser 4096 Tem  1 19:30 ../
+-rwxrwxr-x 1 ubuntuUser ubuntuUser   58 Tem  1 19:30 saxon*
+
+0.3) INSTALL python-packages X NOT REQUIRED DUE TO RECURSIVE CLONE IN SECOND STEP!!!
+ubuntuUser@MACHINE:~$ mkdir ~/python-packages
+ubuntuUser@MACHINE:~$ cd ~/python-packages
+ubuntuUser@MACHINE:~/python-packages$ git clone https://github.com/fferri/v_repStubsGen.git
+Cloning into 'v_repStubsGen'...
+remote: Counting objects: 523, done.
+remote: Compressing objects: 100% (32/32), done.
+remote: Total 523 (delta 18), reused 31 (delta 9), pack-reused 480
+Receiving objects: 100% (523/523), 106.89 KiB | 0 bytes/s, done.
+Resolving deltas: 100% (324/324), done.
+Checking connectivity... done.
+ubuntuUser@MACHINE:~/python-packages$ echo 'export PYTHONPATH="$PYTHONPATH:$HOME/python-packages"' >> ~/.bashrc
+ubuntuUser@MACHINE:~/python-packages$ source ~/.bashrc
+
+
+1) Creating and Inializing ROS Catkin Workspace.txt
+
+2) Clone v_repExtRosInterface RECURSIVELY to GET SUBMODULES
+ubuntuUser@MACHINE:~/catkin_ws/src$ git clone --recursive https://github.com/fferri/v_repExtRosInterface.git vrep_ros_interface
+Cloning into 'vrep_ros_interface'...
+remote: Counting objects: 618, done.
+remote: Compressing objects: 100% (13/13), done.
+remote: Total 618 (delta 9), reused 17 (delta 5), pack-reused 594
+Receiving objects: 100% (618/618), 2.35 MiB | 1.55 MiB/s, done.
+Resolving deltas: 100% (357/357), done.
+Checking connectivity... done.
+Submodule 'external/v_repStubsGen' (https://github.com/fferri/v_repStubsGen) registered for path 'external/v_repStubsGen'
+Cloning into 'external/v_repStubsGen'...
+remote: Counting objects: 523, done.
+remote: Compressing objects: 100% (32/32), done.
+remote: Total 523 (delta 18), reused 31 (delta 9), pack-reused 480
+Receiving objects: 100% (523/523), 106.89 KiB | 0 bytes/s, done.
+Resolving deltas: 100% (324/324), done.
+Checking connectivity... done.
+Submodule path 'external/v_repStubsGen': checked out '9b09e2f50dad7d81d0dff10e75c2ad2187db87aa'
+Submodule 'external/pycpp' (https://github.com/fferri/pycpp.git) registered for path 'external/pycpp'
+Cloning into 'external/pycpp'...
+remote: Counting objects: 77, done.
+remote: Total 77 (delta 0), reused 0 (delta 0), pack-reused 77
+Unpacking objects: 100% (77/77), done.
+Checking connectivity... done.
+Submodule path 'external/v_repStubsGen/external/pycpp': checked out 'eb5879ada4502ac9117e02171002e633848751fc'
+
+3) INSTALL xsltproc
+ubuntuUser@MACHINE:~/catkin_ws$ sudo apt install xsltproc
+[sudo] password for ubuntuUser: 
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following packages were automatically installed and are no longer required:
+  libbonobo2-0 libbonobo2-common libgnome-2-0 libgnome2-common libgnomevfs2-0 libgnomevfs2-common libmircommon5 libopencv-photo2.4v5
+  liborbit-2-0 libwireshark6 libwiretap5 libwsutil6 linux-headers-4.4.0-72 linux-headers-4.4.0-72-generic linux-headers-4.4.0-75
+  linux-headers-4.4.0-75-generic linux-headers-4.4.0-77 linux-headers-4.4.0-77-generic linux-headers-4.4.0-78 linux-headers-4.4.0-78-generic
+  linux-headers-4.4.0-79 linux-headers-4.4.0-79-generic linux-image-4.4.0-72-generic linux-image-4.4.0-75-generic
+  linux-image-4.4.0-77-generic linux-image-4.4.0-78-generic linux-image-4.4.0-79-generic linux-image-extra-4.4.0-72-generic
+  linux-image-extra-4.4.0-75-generic linux-image-extra-4.4.0-77-generic linux-image-extra-4.4.0-78-generic linux-image-extra-4.4.0-79-generic
+  python-opencv
+Use 'sudo apt autoremove' to remove them.
+The following NEW packages will be installed:
+  xsltproc
+0 upgraded, 1 newly installed, 0 to remove and 9 not upgraded.
+Need to get 13,4 kB of archives.
+After this operation, 150 kB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu xenial-updates/main amd64 xsltproc amd64 1.1.28-2.1ubuntu0.1 [13,4 kB]
+Fetched 13,4 kB in 0s (61,6 kB/s)   
+N: Ignoring file '20auto-upgrades.ucf-dist' in directory '/etc/apt/apt.conf.d/' as it has an invalid filename extension
+Selecting previously unselected package xsltproc.
+(Reading database ... 572983 files and directories currently installed.)
+Preparing to unpack .../xsltproc_1.1.28-2.1ubuntu0.1_amd64.deb ...
+Unpacking xsltproc (1.1.28-2.1ubuntu0.1) ...
+Processing triggers for man-db (2.7.5-1) ...
+Setting up xsltproc (1.1.28-2.1ubuntu0.1) ...
+N: Ignoring file '20auto-upgrades.ucf-dist' in directory '/etc/apt/apt.conf.d/' as it has an invalid filename extension
+
+4) BUILD
+ubuntuUser@MACHINE:~/catkin_ws$ catkin build
+-------------------------------------------------------------
+Profile:                     default
+Extending:          [cached] /opt/ros/kinetic
+Workspace:                   /home/ubuntuUser/catkin_ws
+-------------------------------------------------------------
+Source Space:       [exists] /home/ubuntuUser/catkin_ws/src
+Log Space:          [exists] /home/ubuntuUser/catkin_ws/logs
+Build Space:        [exists] /home/ubuntuUser/catkin_ws/build
+Devel Space:        [exists] /home/ubuntuUser/catkin_ws/devel
+Install Space:      [unused] /home/ubuntuUser/catkin_ws/install
+DESTDIR:            [unused] None
+-------------------------------------------------------------
+Devel Space Layout:          linked
+Install Space Layout:        None
+-------------------------------------------------------------
+Additional CMake Args:       None
+Additional Make Args:        None
+Additional catkin Make Args: None
+Internal Make Job Server:    True
+Cache Job Environments:      False
+-------------------------------------------------------------
+Whitelisted Packages:        None
+Blacklisted Packages:        None
+-------------------------------------------------------------
+Workspace configuration appears valid.
+-------------------------------------------------------------
+[build] Found '1' packages in 0.0 seconds.                                                                                                    
+[build] Package table is up to date.                                                                                                          
+Starting  >>> vrep_ros_interface                                                                                                              
+Finished  <<< vrep_ros_interface                [ 1 minute and 23.5 seconds ]                                                                 
+[build] Summary: All 1 packages succeeded!                                                                                                    
+[build]   Ignored:   None.                                                                                                                    
+[build]   Warnings:  None.                                                                                                                    
+[build]   Abandoned: None.                                                                                                                    
+[build]   Failed:    None.                                                                                                                    
+[build] Runtime: 1 minute and 23.6 seconds total.
+
+5) INSTALL ROS INTERFACE LIB
+ubuntuUser@MACHINE:~/catkin_ws/devel$ cd lib/
+ubuntuUser@MACHINE:~/catkin_ws/devel/lib$ ll
+total 16
+drwxrwxr-x 3 ubuntuUser ubuntuUser 4096 Tem  1 21:13 ./
+drwxrwxr-x 6 ubuntuUser ubuntuUser 4096 Tem  1 21:20 ../
+lrwxrwxrwx 1 ubuntuUser ubuntuUser   89 Tem  1 21:13 libv_repExtRosInterface.so -> /home/ubuntuUser/catkin_ws/devel/.private/vrep_ros_interface/lib/libv_repExtRosInterface.so*
+drwxrwxr-x 2 ubuntuUser ubuntuUser 4096 Tem  1 21:13 pkgconfig/
+
+ubuntuUser@MACHINE:~/catkin_ws/devel/lib$ cd /home/ubuntuUser/catkin_ws/devel/.private/vrep_ros_interface/lib/
+ubuntuUser@MACHINE:~/catkin_ws/devel/.private/vrep_ros_interface/lib$ ll
+total 25860
+drwxrwxr-x 3 ubuntuUser ubuntuUser     4096 Tem  1 21:21 ./
+drwxrwxr-x 4 ubuntuUser ubuntuUser     4096 Tem  1 19:58 ../
+-rwxrwxr-x 1 ubuntuUser ubuntuUser 26468096 Tem  1 21:13 libv_repExtRosInterface.so*
+drwxrwxr-x 2 ubuntuUser ubuntuUser     4096 Tem  1 19:38 pkgconfig/
+ubuntuUser@MACHINE:~/catkin_ws/devel/.private/vrep_ros_interface/lib$ cp libv_repExtRosInterface.so $VREP_ROOT 
+
