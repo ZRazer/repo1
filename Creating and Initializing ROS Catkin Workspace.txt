@@ -1,0 +1,62 @@
+1)
+ubuntuUser@MACHINE:~$ mkdir -p ~/catkin_ws/src
+
+2)
+ubuntuUser@MACHINE:~$ cd ~/catkin_ws/src
+
+3)
+ubuntuUser@MACHINE:~/catkin_ws/src$ catkin_init_workspace
+Creating symlink "/home/ubuntuUser/catkin_ws/src/CMakeLists.txt" pointing to "/opt/ros/kinetic/share/catkin/cmake/toplevel.cmake"
+
+4)
+ubuntuUser@MACHINE:~/catkin_ws/src$ cd ..
+ubuntuUser@MACHINE:~/catkin_ws$ ll
+total 12
+drwxrwxr-x  3 ubuntuUser ubuntuUser 4096 Tem  1 19:34 ./
+drwxr-xr-x 63 ubuntuUser ubuntuUser 4096 Tem  1 19:34 ../
+drwxrwxr-x  2 ubuntuUser ubuntuUser 4096 Tem  1 19:34 src/
+
+5)
+ubuntuUser@MACHINE:~/catkin_ws$ catkin build
+-------------------------------------------------------------
+Profile:                     default
+Extending:             [env] /opt/ros/kinetic
+Workspace:                   /home/ubuntuUser/catkin_ws
+-------------------------------------------------------------
+Source Space:       [exists] /home/ubuntuUser/catkin_ws/src
+Log Space:         [missing] /home/ubuntuUser/catkin_ws/logs
+Build Space:        [exists] /home/ubuntuUser/catkin_ws/build
+Devel Space:        [exists] /home/ubuntuUser/catkin_ws/devel
+Install Space:      [unused] /home/ubuntuUser/catkin_ws/install
+DESTDIR:            [unused] None
+-------------------------------------------------------------
+Devel Space Layout:          linked
+Install Space Layout:        None
+-------------------------------------------------------------
+Additional CMake Args:       None
+Additional Make Args:        None
+Additional catkin Make Args: None
+Internal Make Job Server:    True
+Cache Job Environments:      False
+-------------------------------------------------------------
+Whitelisted Packages:        None
+Blacklisted Packages:        None
+-------------------------------------------------------------
+Workspace configuration appears valid.
+
+NOTE: Forcing CMake to run for each package.
+-------------------------------------------------------------
+[build] No packages were found in the source space '/home/ubuntuUser/catkin_ws/src'
+[build] No packages to be built.
+[build] Package table is up to date.                                           
+Starting  >>> catkin_tools_prebuild                                            
+Finished  <<< catkin_tools_prebuild                [ 3.3 seconds ]             
+[build] Summary: All 1 packages succeeded!                                     
+[build]   Ignored:   None.                                                     
+[build]   Warnings:  None.                                                     
+[build]   Abandoned: None.                                                     
+[build]   Failed:    None.                                                     
+[build] Runtime: 3.3 seconds total.                                            
+
+6)
+ubuntuUser@MACHINE:~/catkin_ws$ source devel/setup.bash
